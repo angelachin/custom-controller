@@ -5,8 +5,8 @@ import (
 	"os"
 
 	log "github.com/Sirupsen/logrus"
+	istio_v1alpha3 "github.com/chinangela/custom-controller/pkg/apis/networking/v1alpha3"
 	core_v1 "k8s.io/api/core/v1"
-	extensions_v1beta1 "k8s.io/api/extensions/v1beta1"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -101,7 +101,7 @@ func (t *TestHandler) ObjectCreated(obj interface{}) {
 			panic(err)
 		}
 
-		_, err := client.ExtensionsV1Beta1.VirtualServices(meta_v1.NamespaceDefault).Create(&extensions_v1beta1.VirtualService{
+		_, err := client.ExtensionsV1Beta1.VirtualServices(meta_v1.NamespaceDefault).Create(&istio_v1alpha3.VirtualService{
 			TypeMeta: meta_v1.TypeMeta{
 				Kind:       "VirtualService",
 				APIVersion: "networking.istio.io/v1alpha3",
@@ -110,26 +110,26 @@ func (t *TestHandler) ObjectCreated(obj interface{}) {
 				Name:      string(endpoint.ObjectMeta.Name),
 				Namespace: meta_v1.NamespaceDefault,
 			},
-			Spec: extensions_v1beta1.VirtualServiceSpec{
-				Gateways: []extensions_v1beta1.Gateway{
+			Spec: istio_v1alpha3.VirtualServiceSpec{
+				Gateways: []istio_v1alpha3.Gateway{
 					"cfcr-gateway",
 				},
-				Hosts: []extensions_v1beta1.Host{
+				Hosts: []istio_v1alpha3.Host{
 					"'*'",
 				},
-				HTTP: []extensions_v1beta1.HTTPRoute{
+				HTTP: []istio_v1alpha3.HTTPRoute{
 					{
-						Match: []extensions_v1beta1.MatchRequest{
+						Match: []istio_v1alpha3.MatchRequest{
 							{
 								Port: uint32(8000),
 							},
 						},
-						Route: []extensions_v1beta1.DestinationWeight{
+						Route: []istio_v1alpha3.DestinationWeight{
 							{
-								Destination: extensions_v1beta1.Destination{
+								Destination: istio_v1alpha3.Destination{
 									Host: service.ObjectMeta.Name,
-									Port: extensions_v1beta1.PortSelector{
-										Port: extensions_v1beta1.PortSelector_Name{
+									Port: istio_v1alpha3.PortSelector{
+										Port: istio_v1alpha3.PortSelector_Name{
 											Name: "6789",
 										},
 									},
